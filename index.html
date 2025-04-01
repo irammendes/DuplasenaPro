@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dupla Sena de Páscoa Analytics Pro</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --gray: #95a5a6;
+            --white: #ffffff;
+            --shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        
+        .numero {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            margin: 5px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .numero-sorteado {
+            background: var(--danger);
+            box-shadow: 0 0 5px rgba(231, 76, 60, 0.7);
+        }
+        
+        .numero-frequente {
+            background: var(--success);
+        }
+        
+        .numero-raro {
+            background: var(--warning);
+        }
+        
+        .auth-container {
+            max-width: 400px;
+            margin: 5% auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+        .flex-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .col {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .grafico {
+            height: 20px;
+            background: var(--light);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .barra {
+            height: 100%;
+            background: var(--secondary);
+            transition: width 0.5s;
+        }
+        
+        .destaque {
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--primary);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .flex-grid {
+                flex-direction: column;
+            }
+            
+            .col {
+                width: 100%;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .error-message {
+            color: var(--danger);
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        th {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+        }
+        
+        .estrategia-card {
+            border-left: 4px solid var(--secondary);
+            padding-left: 15px;
+            margin: 15px 0;
+        }
+        
+        .sorteio-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .sorteio-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .nao-acumulou {
+            background-color: #ffe6e6;
+            border-left: 4px solid var(--danger);
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Componentes serão renderizados aqui -->
+    </div>
+
+    <script>
+        const DuplaSenaApp = {
+            state: {
+                user: null,
+                resultados: [],
+                frequenciaNumeros: Array(50).fill(0),
+                ultimosResultadosAnalisados: [],
+                estatisticasCalculadas: false,
+                filtros: {
+                    periodo: 'all',
+                    anoInicio: null,
+                    anoFim: null
+                },
+                loading: false,
+                error: null,
+                estrategias: [
+                    {
+                        nome: "Pares e Ímpares Balanceados",
+                        descricao: "Jogar com equilíbrio entre pares e ímpares",
+                        referencia: "Baseado na distribuição histórica"
+                    },
+                    {
+                        nome: "Números Quentes",
+                        descricao: "Focar em números que saíram recentemente",
+                        referencia: "Tendência de números recentes"
+                    },
+                    {
+                        nome: "Números Frios",
+                        descricao: "Incluir números atrasados",
+                        referencia: "Lei dos atrasados"
+                    },
+                    {
+                        nome: "Distribuição por Dezenas",
+                        descricao: "Selecionar números de todas as dezenas",
+                        referencia: "Estatísticas de distribuição"
+                    }
+                ]
+            },
+            
+            init() {
+                this.setupEventListeners();
+                this.loadData();
+                this.render();
+            },
+            
+            async loadData() {
+                this.setState({ loading: true });
+                
+                try {
+                    const response = await fetch('resultados-duplasena.json');
+                    if (!response.ok) throw new Error('Arquivo não encontrado');
+                    
+                    const data = await response.json();
+                    this.setState({ 
+                        resultados: data,
+                        ultimosResultadosAnalisados: data,
+                        loading: false 
+                    });
+                    
+                    this.calcularFrequenciaNumeros(data);
+                    this.calcularEstatisticasAvancadas(data);
+                    
+                } catch (error) {
+                    console.warn('Usando dados de exemplo:', error);
+                    this.carregarDadosExemplo();
+                }
+            },
+            
+            carregarDadosExemplo() {
+                // Dados de exemplo para Dupla Sena (2 sorteios de 6 números cada, de 1 a 50)
+                const dados = [
+                    { 
+                        concurso: 1, 
+                        data: "01/04/2023", 
+                        acumulou: false,
+                        sorteios: [
+                            { numero: 1, numeros: [7, 12, 23, 34, 45, 50] },
+                            { numero: 2, numeros: [3, 15, 22, 36, 41, 49] }
+                        ]
+                    },
+                    { 
+                        concurso: 2, 
+                        data: "08/04/2023", 
+                        acumulou: true,
+                        sorteios: [
+                            { numero: 1, numeros: [5, 11, 19, 27, 38, 46] },
+                            { numero: 2, numeros: [2, 14, 21, 33, 40, 48] }
+                        ]
+                    },
+                    { 
+                        concurso: 3, 
+                        data: "15/04/2023", 
+                        acumulou: false,
+                        sorteios: [
+                            { numero: 1, numeros: [4, 13, 20, 31, 42, 47] },
+                            { numero: 2, numeros: [6, 16, 25, 32, 39, 44] }
+                        ]
+                    },
+                    { 
+                        concurso: 4, 
+                        data: "22/04/2023", 
+                        acumulou: false,
+                        sorteios: [
+                            { numero: 1, numeros: [8, 17, 24, 35, 43, 50] },
+                            { numero: 2, numeros: [1, 10, 18, 29, 37, 45] }
+                        ]
+                    },
+                    { 
+                        concurso: 5, 
+                        data: "29/04/2023", 
+                        acumulou: true,
+                        sorteios: [
+                            { numero: 1, numeros: [9, 12, 26, 30, 41, 49] },
+                            { numero: 2, numeros: [3, 15, 22, 36, 40, 48] }
+                        ]
+                    }
+                ];
+                
+                this.setState({ 
+                    resultados: dados,
+                    ultimosResultadosAnalisados: dados,
+                    loading: false 
+                });
+                
+                this.calcularFrequenciaNumeros(dados);
+                this.calcularEstatisticasAvancadas(dados);
+            },
+            
+            setState(newState) {
+                this.state = { ...this.state, ...newState };
+                this.render();
+            },
+            
+            render() {
+                const app = document.getElementById('app');
+                
+                if (!this.state.user) {
+                    app.innerHTML = this.loginTemplate();
+                    return;
+                }
+                
+                app.innerHTML = `
+                    <div class="container">
+                        <header class="header">
+                            <h1>Dupla Sena de Páscoa Analytics Pro</h1>
+                            <div style="margin-top: 15px;">
+                                <button class="btn btn-danger" onclick="DuplaSenaApp.logout()">Sair</button>
+                                ${this.state.user?.username === 'irammendes' ? `
+                                    <button class="btn btn-warning" onclick="DuplaSenaApp.mostrarPainelAdmin()">Painel Admin</button>
+                                ` : ''}
+                            </div>
+                        </header>
+                        
+                        <div class="flex-grid">
+                            <div class="col">
+                                ${this.geradorTemplate()}
+                            </div>
+                            <div class="col">
+                                ${this.analiseTemplate()}
+                            </div>
+                        </div>
+                        
+                        ${this.estatisticasTemplate()}
+                        ${this.verificadorTemplate()}
+                        ${this.historicoTemplate()}
+                    </div>
+                `;
+                
+                if (this.state.user?.username === 'irammendes' && !document.getElementById('painelAdminModal')) {
+                    document.body.insertAdjacentHTML('beforeend', this.painelAdminTemplate());
+                }
+            },
+            
+            loginTemplate() {
+                return `
+                    <div class="auth-container card animate">
+                        <h2>Acesso ao Sistema</h2>
+                        <form onsubmit="DuplaSenaApp.handleLogin(event)">
+                            <div>
+                                <label>Usuário:</label>
+                                <input type="text" required>
+                            </div>
+                            <div>
+                                <label>Senha:</label>
+                                <input type="password" required>
+                            </div>
+                            <button type="submit" class="btn" style="width: 100%;">Entrar</button>
+                            ${this.state.error ? `<p class="error-message">${this.state.error}</p>` : ''}
+                        </form>
+                    </div>
+                `;
+            },
+            
+            painelAdminTemplate() {
+                return `
+                    <div id="painelAdminModal" class="modal">
+                        <div class="card" style="margin: 5% auto; max-width: 500px;">
+                            <h2>Painel Administrativo</h2>
+                            <button class="btn btn-danger" style="float: right;" onclick="DuplaSenaApp.fecharPainelAdmin()">X</button>
+                            
+                            <h3 style="margin-top: 20px;">Criar Novo Usuário</h3>
+                            <form onsubmit="DuplaSenaApp.criarNovoUsuario(event)">
+                                <div>
+                                    <label>Nome de usuário:</label>
+                                    <input type="text" id="novoUsuario" required>
+                                </div>
+                                <div>
+                                    <label>Senha:</label>
+                                    <input type="password" id="novaSenha" required>
+                                </div>
+                                <button type="submit" class="btn btn-success">Criar Usuário</button>
+                            </form>
+                            
+                            <h3 style="margin-top: 30px;">Usuários Existentes</h3>
+                            <div id="listaUsuarios" style="max-height: 300px; overflow-y: auto;">
+                                ${this.listarUsuariosExistente()}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            
+            geradorTemplate() {
+                return `
+                    <div class="card animate">
+                        <h2>Gerador de Jogos Inteligente</h2>
+                        <div>
+                            <label>Quantidade de jogos:</label>
+                            <input type="number" id="quantidadeJogos" min="1" max="20" value="1">
+                        </div>
+                        <div>
+                            <label>Estratégia:</label>
+                            <select id="estrategiaGeracao" style="width: 100%; padding: 10px; margin-bottom: 15px;">
+                                <option value="aleatorio">Aleatório Puro</option>
+                                <option value="balanceado">Pares/Ímpares Balanceados</option>
+                                <option value="quentes">Números Quentes</option>
+                                <option value="frios">Números Frios</option>
+                                <option value="completo">Estratégia Completa</option>
+                            </select>
+                        </div>
+                        <button class="btn" onclick="DuplaSenaApp.gerarJogos()">Gerar Jogos</button>
+                        <button class="btn btn-danger" onclick="DuplaSenaApp.limparJogos()">Limpar</button>
+                        <div id="jogosGerados" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+            },
+            
+            analiseTemplate() {
+                return `
+                    <div class="card animate">
+                        <h2>Análise de Resultados</h2>
+                        <div>
+                            <label>Período de análise:</label>
+                            <select id="periodoAnalise" onchange="DuplaSenaApp.toggleCustomPeriodo()" style="width: 100%; padding: 10px; margin-bottom: 15px;">
+                                <option value="all">Todos os resultados</option>
+                                <option value="last5">Últimos 5 concursos</option>
+                                <option value="last10">Últimos 10 concursos</option>
+                                <option value="naoAcumulou">Concursos que não acumularam</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                        <div id="customPeriodoContainer" class="hidden">
+                            <div>
+                                <label>Data início:</label>
+                                <input type="date" id="dataInicio">
+                            </div>
+                            <div>
+                                <label>Data fim:</label>
+                                <input type="date" id="dataFim">
+                            </div>
+                        </div>
+                        <button class="btn" onclick="DuplaSenaApp.analisarResultados()">Analisar</button>
+                        <div id="analiseResultados" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+            },
+            
+            estatisticasTemplate() {
+                return `
+                    <div class="card animate">
+                        <h2>Estatísticas e Frequência</h2>
+                        <div id="frequenciaNumeros"></div>
+                        <div id="estatisticasAvancadas" class="hidden">
+                            <h3>Estatísticas Avançadas</h3>
+                            <div id="contentEstatisticas"></div>
+                        </div>
+                        <button class="btn" id="btnMaisEstatisticas" onclick="DuplaSenaApp.toggleEstatisticasAvancadas()">Mostrar Mais Estatísticas</button>
+                    </div>
+                `;
+            },
+            
+            verificadorTemplate() {
+                return `
+                    <div class="card animate">
+                        <h2>Verificador de Acertos</h2>
+                        <div>
+                            <label>Seus números (separados por vírgula ou espaço):</label>
+                            <input type="text" id="meusNumeros" placeholder="Ex: 1, 2, 3, 4, 5, 6">
+                        </div>
+                        <div>
+                            <label>Concurso específico (opcional):</label>
+                            <input type="number" id="concursoVerificar" placeholder="Número do concurso">
+                        </div>
+                        <button class="btn" onclick="DuplaSenaApp.verificarAcertos()">Verificar</button>
+                        <div id="resultadoVerificacao" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+            },
+            
+            historicoTemplate() {
+                return `
+                    <div class="card animate">
+                        <h2>Histórico de Concursos</h2>
+                        <div>
+                            <label>Quantidade de concursos a exibir:</label>
+                            <input type="number" id="qtdConcursos" min="1" max="50" value="5">
+                        </div>
+                        <button class="btn" onclick="DuplaSenaApp.exibirHistorico()">Exibir</button>
+                        <div id="historicoResultados" style="margin-top: 15px;"></div>
+                    </div>
+                `;
+            },
+            
+            // Métodos para controlar o painel admin
+            mostrarPainelAdmin() {
+                document.getElementById('painelAdminModal').style.display = 'block';
+            },
+            
+            fecharPainelAdmin() {
+                document.getElementById('painelAdminModal').style.display = 'none';
+            },
+            
+            listarUsuariosExistente() {
+                const usuarios = JSON.parse(localStorage.getItem('duplaSenaUsers')) || {
+                    'irammendes': 'GaelM2509',
+                    'usuario': 'dupla2024',
+                    'teste': 'teste123'
+                };
+                
+                let html = '<table style="width: 100%;"><tr><th>Usuário</th><th>Ações</th></tr>';
+                
+                for (const [username, password] of Object.entries(usuarios)) {
+                    html += `
+                        <tr>
+                            <td>${username}</td>
+                            <td>
+                                ${username !== 'irammendes' ? `
+                                    <button class="btn btn-danger btn-sm" onclick="DuplaSenaApp.removerUsuario('${username}')">Remover</button>
+                                ` : '<small>Admin principal</small>'}
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+                html += '</table>';
+                return html;
+            },
+            
+            criarNovoUsuario(event) {
+                event.preventDefault();
+                const username = document.getElementById('novoUsuario').value.trim();
+                const password = document.getElementById('novaSenha').value.trim();
+                
+                if (!username || !password) {
+                    alert('Preencha todos os campos!');
+                    return;
+                }
+                
+                const usuarios = JSON.parse(localStorage.getItem('duplaSenaUsers')) || {
+                    'irammendes': 'GaelM2509',
+                    'usuario': 'dupla2024',
+                    'teste': 'teste123'
+                };
+                
+                if (usuarios[username]) {
+                    alert('Usuário já existe!');
+                    return;
+                }
+                
+                usuarios[username] = password;
+                localStorage.setItem('duplaSenaUsers', JSON.stringify(usuarios));
+                
+                alert('Usuário criado com sucesso!');
+                document.getElementById('listaUsuarios').innerHTML = this.listarUsuariosExistente();
+                document.getElementById('novoUsuario').value = '';
+                document.getElementById('novaSenha').value = '';
+            },
+            
+            removerUsuario(username) {
+                if (username === 'irammendes') {
+                    alert('Não é possível remover o usuário admin principal!');
+                    return;
+                }
+                
+                if (!confirm(`Tem certeza que deseja remover o usuário ${username}?`)) {
+                    return;
+                }
+                
+                const usuarios = JSON.parse(localStorage.getItem('duplaSenaUsers')) || {};
+                delete usuarios[username];
+                localStorage.setItem('duplaSenaUsers', JSON.stringify(usuarios));
+                
+                document.getElementById('listaUsuarios').innerHTML = this.listarUsuariosExistente();
+            },
+            
+            handleLogin(event) {
+                event.preventDefault();
+                const credentials = {
+                    username: event.target[0].value.trim(),
+                    password: event.target[1].value.trim()
+                };
+                
+                const usuarios = JSON.parse(localStorage.getItem('duplaSenaUsers')) || {
+                    'irammendes': 'GaelM2509',
+                    'usuario': 'dupla2024',
+                    'teste': 'teste123'
+                };
+                
+                if (usuarios[credentials.username] && usuarios[credentials.username] === credentials.password) {
+                    this.setState({ 
+                        user: credentials,
+                        error: null
+                    });
+                    localStorage.setItem('duplaSenaUser', JSON.stringify(credentials));
+                } else {
+                    this.setState({ error: 'Credenciais inválidas' });
+                }
+            },
+            
+            logout() {
+                this.setState({ user: null });
+                localStorage.removeItem('duplaSenaUser');
+            },
+            
+            setupEventListeners() {
+                const savedUser = localStorage.getItem('duplaSenaUser');
+                if (savedUser) {
+                    this.setState({ user: JSON.parse(savedUser) });
+                }
+                
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.getElementById('meusNumeros')?.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            this.verificarAcertos();
+                        }
+                    });
+                });
+            },
+            
+            toggleCustomPeriodo() {
+                const periodo = document.getElementById('periodoAnalise').value;
+                const container = document.getElementById('customPeriodoContainer');
+                
+                if (periodo === 'custom') {
+                    container.classList.remove('hidden');
+                    const currentDate = new Date();
+                    const pastDate = new Date();
+                    pastDate.setMonth(currentDate.getMonth() - 3);
+                    
+                    document.getElementById('dataInicio').value = pastDate.toISOString().split('T')[0];
+                    document.getElementById('dataFim').value = currentDate.toISOString().split('T')[0];
+                } else {
+                    container.classList.add('hidden');
+                }
+            },
+            
+            toggleEstatisticasAvancadas() {
+                const container = document.getElementById('estatisticasAvancadas');
+                const btn = document.getElementById('btnMaisEstatisticas');
+                
+                if (container.classList.contains('hidden')) {
+                    if (!this.state.estatisticasCalculadas) {
+                        this.calcularEstatisticasAvancadas(this.state.ultimosResultadosAnalisados);
+                        this.setState({ estatisticasCalculadas: true });
+                    }
+                    container.classList.remove('hidden');
+                    btn.textContent = 'Mostrar Menos Estatísticas';
+                } else {
+                    container.classList.add('hidden');
+                    btn.textContent = 'Mostrar Mais Estatísticas';
+                }
+            },
+            
+            gerarJogos() {
+                const quantity = parseInt(document.getElementById('quantidadeJogos').value) || 1;
+                const estrategia = document.getElementById('estrategiaGeracao').value;
+                
+                const container = document.getElementById('jogosGerados');
+                container.innerHTML = '<h3>Seus Jogos Gerados:</h3>';
+                
+                for (let i = 0; i < quantity; i++) {
+                    let game;
+                    
+                    switch(estrategia) {
+                        case 'aleatorio':
+                            game = this.gerarNumerosAleatorios(6);
+                            break;
+                        case 'balanceado':
+                            game = this.gerarJogoBalanceado();
+                            break;
+                        case 'quentes':
+                            game = this.gerarJogoNumerosQuentes();
+                            break;
+                        case 'frios':
+                            game = this.gerarJogoNumerosFrios();
+                            break;
+                        case 'completo':
+                            game = this.gerarJogoCompleto();
+                            break;
+                        default:
+                            game = this.gerarNumerosAleatorios(6);
+                    }
+                    
+                    const atrasados = game.map(num => this.verificarAtraso(num));
+                    
+                    container.innerHTML += `
+                        <div class="card" style="margin-top: 10px;">
+                            <p><strong>Jogo ${i+1}:</strong></p>
+                            <div>${game.map((num, idx) => `
+                                <span class="numero ${atrasados[idx] ? 'numero-raro' : ''}" 
+                                      title="${atrasados[idx] ? 'Número atrasado' : ''}">
+                                    ${num.toString().padStart(2, '0')}
+                                </span>
+                            `).join('')}</div>
+                            <small>${game.join(', ')}</small>
+                        </div>
+                    `;
+                }
+            },
+            
+            gerarNumerosAleatorios(quantidade) {
+                const numeros = new Set();
+                while (numeros.size < quantidade) {
+                    numeros.add(Math.floor(Math.random() * 50) + 1);
+                }
+                return Array.from(numeros).sort((a, b) => a - b);
+            },
+            
+            gerarJogoBalanceado() {
+                // 3 pares e 3 ímpares
+                const numerosPares = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50];
+                const numerosImpares = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49];
+                
+                const resultado = new Set();
+                
+                // Embaralhar arrays
+                numerosPares.sort(() => Math.random() - 0.5);
+                numerosImpares.sort(() => Math.random() - 0.5);
+                
+                // Adicionar 3 pares
+                for (let i = 0; i < 3; i++) {
+                    resultado.add(numerosPares[i]);
+                }
+                
+                // Adicionar 3 ímpares
+                for (let i = 0; i < 3; i++) {
+                    resultado.add(numerosImpares[i]);
+                }
+                
+                return Array.from(resultado).sort((a, b) => a - b);
+            },
+            
+            gerarJogoNumerosQuentes() {
+                if (!this.state.ultimosResultadosAnalisados.length) {
+                    return this.gerarNumerosAleatorios(6);
+                }
+                
+                // Pegar números que apareceram nos últimos 5 concursos
+                const numerosQuentes = new Set();
+                const ultimosConcursos = this.state.ultimosResultadosAnalisados.slice(0, 5);
+                
+                ultimosConcursos.forEach(concurso => {
+                    concurso.sorteios.forEach(sorteio => {
+                        sorteio.numeros.forEach(num => numerosQuentes.add(num));
+                    });
+                });
+                
+                const numerosQuentesArray = Array.from(numerosQuentes);
+                
+                // Se não tiver números quentes suficientes, completar com aleatórios
+                const resultado = new Set();
+                const qtdQuentes = Math.min(4, numerosQuentesArray.length); // 4 números quentes
+                
+                // Embaralhar números quentes
+                numerosQuentesArray.sort(() => Math.random() - 0.5);
+                
+                // Adicionar números quentes
+                for (let i = 0; i < qtdQuentes; i++) {
+                    resultado.add(numerosQuentesArray[i]);
+                }
+                
+                // Completar com aleatórios
+                while (resultado.size < 6) {
+                    resultado.add(Math.floor(Math.random() * 50) + 1);
+                }
+                
+                return Array.from(resultado).sort((a, b) => a - b);
+            },
+            
+            gerarJogoNumerosFrios() {
+                if (!this.state.ultimosResultadosAnalisados.length) {
+                    return this.gerarNumerosAleatorios(6);
+                }
+                
+                // Identificar números que não apareceram nos últimos 10 concursos
+                const todosNumeros = Array.from({length: 50}, (_, i) => i + 1);
+                const numerosSorteados = new Set();
+                const ultimosConcursos = this.state.ultimosResultadosAnalisados.slice(0, 10);
+                
+                ultimosConcursos.forEach(concurso => {
+                    concurso.sorteios.forEach(sorteio => {
+                        sorteio.numeros.forEach(num => numerosSorteados.add(num));
+                    });
+                });
+                
+                const numerosFrios = todosNumeros.filter(num => !numerosSorteados.has(num));
+                
+                // Se não tiver números frios suficientes, considerar os menos sorteados
+                if (numerosFrios.length < 2) {
+                    const frequencia = Array(50).fill(0);
+                    this.state.ultimosResultadosAnalisados.forEach(concurso => {
+                        concurso.sorteios.forEach(sorteio => {
+                            sorteio.numeros.forEach(num => frequencia[num-1]++);
+                        });
+                    });
+                    
+                    const numerosOrdenados = frequencia.map((freq, index) => ({
+                        numero: index + 1,
+                        frequencia: freq
+                    })).sort((a, b) => a.frequencia - b.frequencia);
+                    
+                    numerosFrios.push(...numerosOrdenados.slice(0, 2).map(item => item.numero));
+                }
+                
+                const resultado = new Set();
+                const qtdFrios = Math.min(2, numerosFrios.length); // 2 números frios
+                
+                // Adicionar números frios
+                for (let i = 0; i < qtdFrios; i++) {
+                    resultado.add(numerosFrios[i]);
+                }
+                
+                // Completar com aleatórios
+                while (resultado.size < 6) {
+                    resultado.add(Math.floor(Math.random() * 50) + 1);
+                }
+                
+                return Array.from(resultado).sort((a, b) => a - b);
+            },
+            
+            gerarJogoCompleto() {
+                // Combina todas as estratégias: balanceado, com quentes e frios
+                const jogo = new Set();
+                
+                // 1. Adicionar 1-2 números frios
+                const frios = this.gerarJogoNumerosFrios().slice(0, 2);
+                frios.forEach(num => jogo.add(num));
+                
+                // 2. Adicionar 2-3 números quentes
+                const quentes = this.gerarJogoNumerosQuentes().slice(0, 3);
+                quentes.forEach(num => jogo.add(num));
+                
+                // 3. Balancear pares/ímpares
+                const paresAtuais = Array.from(jogo).filter(num => num % 2 === 0).length;
+                const imparesAtuais = jogo.size - paresAtuais;
+                
+                const numerosPares = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50].filter(num => !jogo.has(num));
+                const numerosImpares = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49].filter(num => !jogo.has(num));
+                
+                // Adicionar pares se necessário
+                while (paresAtuais < 3 && numerosPares.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * numerosPares.length);
+                    jogo.add(numerosPares[randomIndex]);
+                    numerosPares.splice(randomIndex, 1);
+                }
+                
+                // Adicionar ímpares se necessário
+                while (imparesAtuais < 3 && numerosImpares.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * numerosImpares.length);
+                    jogo.add(numerosImpares[randomIndex]);
+                    numerosImpares.splice(randomIndex, 1);
+                }
+                
+                // Se ainda não tiver 6, completar aleatoriamente
+                while (jogo.size < 6) {
+                    jogo.add(Math.floor(Math.random() * 50) + 1);
+                }
+                
+                return Array.from(jogo).sort((a, b) => a - b);
+            },
+            
+            limparJogos() {
+                document.getElementById('jogosGerados').innerHTML = '';
+            },
+            
+            verificarAtraso(numero) {
+                if (!this.state.ultimosResultadosAnalisados.length) return false;
+                
+                const ultimos10Concursos = this.state.ultimosResultadosAnalisados.slice(0, 10);
+                let sorteios = [];
+                ultimos10Concursos.forEach(concurso => {
+                    sorteios = sorteios.concat(concurso.sorteios);
+                });
+                
+                return !sorteios.some(sorteio => sorteio.numeros.includes(numero));
+            },
+            
+            analisarResultados() {
+                const periodoSelecionado = document.getElementById('periodoAnalise').value;
+                let resultadosFiltrados;
+                
+                switch (periodoSelecionado) {
+                    case 'last5':
+                        resultadosFiltrados = this.state.resultados.slice(0, 5);
+                        break;
+                    case 'last10':
+                        resultadosFiltrados = this.state.resultados.slice(0, 10);
+                        break;
+                    case 'naoAcumulou':
+                        resultadosFiltrados = this.state.resultados.filter(concurso => !concurso.acumulou);
+                        break;
+                    case 'custom':
+                        const dataInicio = document.getElementById('dataInicio').value;
+                        const dataFim = document.getElementById('dataFim').value;
+                        
+                        if (!dataInicio || !dataFim) {
+                            alert("Por favor, selecione ambas as datas.");
+                            return;
+                        }
+                        
+                        resultadosFiltrados = this.state.resultados.filter(concurso => {
+                            const partesData = concurso.data.split('/');
+                            if (partesData.length !== 3) return false;
+                            const dataResultado = new Date(`${partesData[2]}-${partesData[1]}-${partesData[0]}`);
+                            const inicio = new Date(dataInicio);
+                            const fim = new Date(dataFim);
+                            
+                            return dataResultado >= inicio && dataResultado <= fim;
+                        });
+                        break;
+                    default:
+                        resultadosFiltrados = this.state.resultados;
+                }
+                
+                if (resultadosFiltrados.length === 0) {
+                    document.getElementById('analiseResultados').innerHTML = `
+                        <div class="card">
+                            <p>Nenhum resultado encontrado para o período selecionado.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                this.setState({
+                    ultimosResultadosAnalisados: resultadosFiltrados,
+                    estatisticasCalculadas: false
+                });
+                
+                this.exibirAnalise(resultadosFiltrados);
+                this.calcularFrequenciaNumeros(resultadosFiltrados);
+                this.calcularEstatisticasAvancadas(resultadosFiltrados);
+            },
+            
+            exibirAnalise(resultados) {
+                const container = document.getElementById('analiseResultados');
+                const totalConcursos = resultados.length;
+                const totalNaoAcumulou = resultados.filter(concurso => !concurso.acumulou).length;
+                
+                const freqPeriodo = Array(50).fill(0);
+                resultados.forEach(concurso => {
+                    concurso.sorteios.forEach(sorteio => {
+                        sorteio.numeros.forEach(num => freqPeriodo[num-1]++);
+                    });
+                });
+                
+                const numerosOrdenados = [...freqPeriodo.entries()]
+                    .map(([num, freq]) => ({ numero: num + 1, frequencia: freq }))
+                    .sort((a, b) => b.frequencia - a.frequencia);
+                
+                const maisSorteados = numerosOrdenados.slice(0, 5).map(item => item.numero);
+                const menosSorteados = numerosOrdenados.slice(-5).reverse().map(item => item.numero);
+                
+                // Números que mais se repetem entre os dois sorteios
+                const numerosRepetidos = this.calcularNumerosRepetidos(resultados);
+                
+                container.innerHTML = `
+                    <div class="card">
+                        <h3>Análise de ${totalConcursos} concursos</h3>
+                        ${totalNaoAcumulou > 0 ? `
+                            <div class="nao-acumulou">
+                                <p><strong>Concursos que não acumularam:</strong> ${totalNaoAcumulou} (${((totalNaoAcumulou/totalConcursos)*100).toFixed(1)}%)</p>
+                            </div>
+                        ` : ''}
+                        <p><strong>Período:</strong> ${resultados[resultados.length-1].data} a ${resultados[0].data}</p>
+                        <p><strong>Números mais sorteados:</strong> ${maisSorteados.join(', ')}</p>
+                        <p><strong>Números menos sorteados:</strong> ${menosSorteados.join(', ')}</p>
+                        <p><strong>Números que mais se repetem nos dois sorteios:</strong> ${numerosRepetidos.slice(0, 5).join(', ')}</p>
+                    </div>
+                `;
+            },
+            
+            calcularNumerosRepetidos(resultados) {
+                const repetidos = {};
+                
+                resultados.forEach(concurso => {
+                    if (concurso.sorteios.length === 2) {
+                        const [sorteio1, sorteio2] = concurso.sorteios;
+                        const numerosRepetidos = sorteio1.numeros.filter(num => sorteio2.numeros.includes(num));
+                        
+                        numerosRepetidos.forEach(num => {
+                            repetidos[num] = (repetidos[num] || 0) + 1;
+                        });
+                    }
+                });
+                
+                return Object.entries(repetidos)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(entry => entry[0]);
+            },
+            
+            calcularFrequenciaNumeros(resultados) {
+                const frequencia = Array(50).fill(0);
+                resultados.forEach(concurso => {
+                    concurso.sorteios.forEach(sorteio => {
+                        sorteio.numeros.forEach(num => frequencia[num-1]++);
+                    });
+                });
+                
+                this.setState({ frequenciaNumeros: frequencia });
+                this.exibirFrequenciaNumeros(frequencia, resultados.length * 2); // 2 sorteios por concurso
+            },
+            
+            exibirFrequenciaNumeros(frequencia, totalSorteios) {
+                const container = document.getElementById('frequenciaNumeros');
+                const maxFrequencia = Math.max(...frequencia);
+                const minFrequencia = Math.min(...frequencia);
+                
+                const numerosOrdenados = frequencia.map((freq, index) => ({
+                    numero: index + 1,
+                    frequencia: freq,
+                    porcentagem: totalSorteios > 0 ? (freq / totalSorteios * 100).toFixed(1) : 0,
+                    atrasado: this.verificarAtraso(index + 1)
+                })).sort((a, b) => b.frequencia - a.frequencia);
+                
+                container.innerHTML = `
+                    <h3>Frequência de Números Sorteados (1-50)</h3>
+                    <p>Total de sorteios considerados: ${totalSorteios}</p>
+                `;
+                
+                const tabela = document.createElement('table');
+                const thead = document.createElement('thead');
+                thead.innerHTML = `
+                    <tr>
+                        <th>Número</th>
+                        <th>Frequência</th>
+                        <th>% de Sorteios</th>
+                        <th>Gráfico</th>
+                    </tr>
+                `;
+                tabela.appendChild(thead);
+                
+                const tbody = document.createElement('tbody');
+                
+                numerosOrdenados.forEach(item => {
+                    const tr = document.createElement('tr');
+                    let classe = '';
+                    
+                    if (item.frequencia === maxFrequencia) {
+                        classe = 'numero-frequente';
+                    } else if (item.frequencia === minFrequencia && totalSorteios > 10) {
+                        classe = 'numero-raro';
+                    } else if (item.atrasado) {
+                        classe = 'numero-raro';
+                    }
+                    
+                    tr.innerHTML = `
+                        <td><span class="numero ${classe}" title="${classe === 'numero-frequente' ? 'Número frequente' : classe === 'numero-raro' ? 'Número raro ou atrasado' : ''}">${item.numero.toString().padStart(2, '0')}</span></td>
+                        <td>${item.frequencia}</td>
+                        <td>${item.porcentagem}%</td>
+                        <td>
+                            <div class="grafico">
+                                <div class="barra" style="width: ${item.porcentagem * 2}%"></div>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                tabela.appendChild(tbody);
+                container.appendChild(tabela);
+            },
+            
+            calcularEstatisticasAvancadas(resultados) {
+                if (resultados.length === 0) return;
+                
+                const content = document.getElementById('contentEstatisticas');
+                content.innerHTML = '';
+                
+                // Estatísticas de pares e ímpares
+                const parImparStats = { pares: 0, impares: 0 };
+                resultados.forEach(concurso => {
+                    concurso.sorteios.forEach(sorteio => {
+                        sorteio.numeros.forEach(num => {
+                            num % 2 === 0 ? parImparStats.pares++ : parImparStats.impares++;
+                        });
+                    });
+                });
+                
+                // Estatísticas por dezenas
+                const dezenasStats = [
+                    { min: 1, max: 10, count: 0 },
+                    { min: 11, max: 20, count: 0 },
+                    { min: 21, max: 30, count: 0 },
+                    { min: 31, max: 40, count: 0 },
+                    { min: 41, max: 50, count: 0 }
+                ];
+                
+                resultados.forEach(concurso => {
+                    concurso.sorteios.forEach(sorteio => {
+                        sorteio.numeros.forEach(num => {
+                            if (num >= 1 && num <= 10) dezenasStats[0].count++;
+                            else if (num >= 11 && num <= 20) dezenasStats[1].count++;
+                            else if (num >= 21 && num <= 30) dezenasStats[2].count++;
+                            else if (num >= 31 && num <= 40) dezenasStats[3].count++;
+                            else if (num >= 41 && num <= 50) dezenasStats[4].count++;
+                        });
+                    });
+                });
+                
+                // Números que mais se repetem entre os dois sorteios
+                const numerosRepetidos = this.calcularNumerosRepetidos(resultados);
+                
+                content.innerHTML = `
+                    <div class="card">
+                        <h4>Distribuição de Pares e Ímpares</h4>
+                        <p>Pares: ${parImparStats.pares} (${(parImparStats.pares/(resultados.length*12)*100).toFixed(1)}%)</p>
+                        <p>Ímpares: ${parImparStats.impares} (${(parImparStats.impares/(resultados.length*12)*100).toFixed(1)}%)</p>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 15px;">
+                        <h4>Distribuição por Dezenas</h4>
+                        <div class="flex-grid">
+                            ${dezenasStats.map(dezena => `
+                                <div class="col">
+                                    <h5>${dezena.min}-${dezena.max}:</h5>
+                                    <p>Total: ${dezena.count}</p>
+                                    <p>Média: ${(dezena.count/resultados.length).toFixed(2)} por concurso</p>
+                                    <p>${((dezena.count/(resultados.length*12))*100).toFixed(1)}% dos números</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="margin-top: 15px;">
+                        <h4>Números que mais se repetem nos dois sorteios</h4>
+                        <ul>
+                            ${numerosRepetidos.slice(0, 5).map(num => `
+                                <li>Número ${num.toString().padStart(2, '0')}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+                
+                this.setState({ estatisticasCalculadas: true });
+            },
+            
+            verificarAcertos() {
+                const numerosInput = document.getElementById('meusNumeros').value.trim();
+                const concursoInput = document.getElementById('concursoVerificar').value.trim();
+                
+                if (!numerosInput) {
+                    alert("Por favor, digite seus números para verificar.");
+                    return;
+                }
+                
+                const numerosArray = numerosInput.split(/[,\s]+/).map(item => parseInt(item.trim()));
+                const meusNumeros = numerosArray.filter(num => !isNaN(num) && num >= 1 && num <= 50);
+                
+                if (meusNumeros.length !== 6) {
+                    alert("Por favor, digite exatamente 6 números válidos (1-50).");
+                    return;
+                }
+                
+                const uniqueNumbers = [...new Set(meusNumeros)];
+                if (uniqueNumbers.length !== meusNumeros.length) {
+                    alert("Você digitou números duplicados. Por favor, corrija.");
+                    return;
+                }
+                
+                let resultado;
+                if (concursoInput) {
+                    const concursoNum = parseInt(concursoInput);
+                    resultado = this.state.resultados.find(r => r.concurso === concursoNum);
+                    
+                    if (!resultado) {
+                        alert("Concurso não encontrado nos nossos registros.");
+                        return;
+                    }
+                } else {
+                    resultado = this.state.resultados[0];
+                }
+                
+                if (!resultado || !resultado.sorteios || resultado.sorteios.length < 2) {
+                    alert("Dados do concurso incompletos.");
+                    return;
+                }
+                
+                const [sorteio1, sorteio2] = resultado.sorteios;
+                
+                const acertosSorteio1 = meusNumeros.filter(num => sorteio1.numeros.includes(num));
+                const acertosSorteio2 = meusNumeros.filter(num => sorteio2.numeros.includes(num));
+                
+                const numerosSorteadosHTML1 = sorteio1.numeros.map(num =>
+                    `<span class="numero ${acertosSorteio1.includes(num) ? 'numero-sorteado' : ''}">${num.toString().padStart(2, '0')}</span>`
+                ).join(' ');
+                
+                const numerosSorteadosHTML2 = sorteio2.numeros.map(num =>
+                    `<span class="numero ${acertosSorteio2.includes(num) ? 'numero-sorteado' : ''}">${num.toString().padStart(2, '0')}</span>`
+                ).join(' ');
+                
+                const meusNumerosHTML = meusNumeros.map(num =>
+                    `<span class="numero ${sorteio1.numeros.includes(num) || sorteio2.numeros.includes(num) ? 'numero-sorteado' : ''}">${num.toString().padStart(2, '0')}</span>`
+                ).join(' ');
+                
+                // Calcular premiação aproximada
+                const premioSorteio1 = this.calcularPremio(acertosSorteio1.length, !resultado.acumulou);
+                const premioSorteio2 = this.calcularPremio(acertosSorteio2.length, !resultado.acumulou);
+                
+                const container = document.getElementById('resultadoVerificacao');
+                container.innerHTML = `
+                    <div class="card">
+                        <h3>Resultado da Verificação</h3>
+                        <p><strong>Concurso ${resultado.concurso}</strong> (${resultado.data})</p>
+                        ${resultado.acumulou ? '' : '<div class="nao-acumulou"><p>Este concurso <strong>NÃO ACUMULOU</strong></p></div>'}
+                        
+                        <div class="sorteio-container">
+                            <div class="sorteio-title">1º Sorteio:</div>
+                            <p>Números sorteados: ${numerosSorteadosHTML1}</p>
+                            <p class="destaque">Você acertou ${acertosSorteio1.length} número(s): ${acertosSorteio1.map(n => n.toString().padStart(2, '0')).join(', ')}</p>
+                            ${premioSorteio1 ? `<p>Premiação estimada: ${premioSorteio1}</p>` : ''}
+                        </div>
+                        
+                        <div class="sorteio-container">
+                            <div class="sorteio-title">2º Sorteio:</div>
+                            <p>Números sorteados: ${numerosSorteadosHTML2}</p>
+                            <p class="destaque">Você acertou ${acertosSorteio2.length} número(s): ${acertosSorteio2.map(n => n.toString().padStart(2, '0')).join(', ')}</p>
+                            ${premioSorteio2 ? `<p>Premiação estimada: ${premioSorteio2}</p>` : ''}
+                        </div>
+                        
+                        <p>Seus números: ${meusNumerosHTML}</p>
+                    </div>
+                `;
+            },
+            
+            calcularPremio(acertos, naoAcumulou) {
+                if (naoAcumulou) {
+                    switch(acertos) {
+                        case 6: return "SENA (1º prêmio)";
+                        case 5: return "QUINA (2º prêmio)";
+                        case 4: return "QUADRA (3º prêmio)";
+                        default: return null;
+                    }
+                } else {
+                    switch(acertos) {
+                        case 6: return "SENA (prêmio acumulado)";
+                        case 5: return "QUINA";
+                        case 4: return "QUADRA";
+                        default: return null;
+                    }
+                }
+            },
+            
+            exibirHistorico() {
+                const qtd = parseInt(document.getElementById('qtdConcursos').value) || 5;
+                const resultados = this.state.resultados.slice(0, qtd);
+                
+                const container = document.getElementById('historicoResultados');
+                container.innerHTML = `
+                    <div class="card">
+                        <h3>Últimos ${resultados.length} Concursos</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Concurso</th>
+                                    <th>Data</th>
+                                    <th>Acumulou?</th>
+                                    <th>1º Sorteio</th>
+                                    <th>2º Sorteio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${resultados.map(concurso => `
+                                    <tr>
+                                        <td>${concurso.concurso}</td>
+                                        <td>${concurso.data}</td>
+                                        <td>${concurso.acumulou ? 'Sim' : '<strong style="color: var(--danger)">Não</strong>'}</td>
+                                        <td>${concurso.sorteios[0].numeros.map(n => n.toString().padStart(2, '0')).join(', ')}</td>
+                                        <td>${concurso.sorteios[1].numeros.map(n => n.toString().padStart(2, '0')).join(', ')}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => DuplaSenaApp.init());
+    </script>
+</body>
+</html>
