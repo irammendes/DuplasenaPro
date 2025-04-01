@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dupla Sena de Páscoa Analytics Pro</title>
+    <title>Dupla Sena de Páscoa Analytics Pro v2.0</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -264,6 +264,39 @@
             padding: 10px;
             margin: 10px 0;
         }
+        
+        .tab-container {
+            margin-bottom: 15px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #f1f1f1;
+            border: none;
+            border-right: 1px solid #ddd;
+        }
+        
+        .tab-button.active {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-top: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -289,25 +322,26 @@
                 estrategias: [
                     {
                         nome: "Pares e Ímpares Balanceados",
-                        descricao: "Jogar com equilíbrio entre pares e ímpares",
+                        descricao: "Jogar com equilíbrio entre pares e ímpares (3 pares e 3 ímpares)",
                         referencia: "Baseado na distribuição histórica"
                     },
                     {
                         nome: "Números Quentes",
-                        descricao: "Focar em números que saíram recentemente",
+                        descricao: "Focar em números que saíram recentemente (últimos 5 concursos)",
                         referencia: "Tendência de números recentes"
                     },
                     {
                         nome: "Números Frios",
-                        descricao: "Incluir números atrasados",
+                        descricao: "Incluir números atrasados (não sorteados nos últimos 10 concursos)",
                         referencia: "Lei dos atrasados"
                     },
                     {
                         nome: "Distribuição por Dezenas",
-                        descricao: "Selecionar números de todas as dezenas",
+                        descricao: "Selecionar números distribuídos por todas as faixas de dezenas",
                         referencia: "Estatísticas de distribuição"
                     }
-                ]
+                ],
+                currentTab: 'gerador'
             },
             
             init() {
@@ -386,6 +420,51 @@
                             { numero: 1, numeros: [9, 12, 26, 30, 41, 49] },
                             { numero: 2, numeros: [3, 15, 22, 36, 40, 48] }
                         ]
+                    },
+                    { 
+                        concurso: 6, 
+                        data: "06/05/2023", 
+                        acumulou: false,
+                        sorteios: [
+                            { numero: 1, numeros: [7, 14, 21, 28, 35, 42] },
+                            { numero: 2, numeros: [2, 9, 16, 23, 30, 37] }
+                        ]
+                    },
+                    { 
+                        concurso: 7, 
+                        data: "13/05/2023", 
+                        acumulou: false,
+                        sorteios: [
+                            { numero: 1, numeros: [1, 8, 15, 22, 29, 36] },
+                            { numero: 2, numeros: [4, 11, 18, 25, 32, 39] }
+                        ]
+                    },
+                    { 
+                        concurso: 8, 
+                        data: "20/05/2023", 
+                        acumulou: true,
+                        sorteios: [
+                            { numero: 1, numeros: [5, 12, 19, 26, 33, 40] },
+                            { numero: 2, numeros: [6, 13, 20, 27, 34, 41] }
+                        ]
+                    },
+                    { 
+                        concurso: 9, 
+                        data: "27/05/2023", 
+                        acumulou: false,
+                        sorteios: [
+                            { numero: 1, numeros: [3, 10, 17, 24, 31, 38] },
+                            { numero: 2, numeros: [7, 14, 21, 28, 35, 42] }
+                        ]
+                    },
+                    { 
+                        concurso: 10, 
+                        data: "03/06/2023", 
+                        acumulou: false,
+                        sorteios: [
+                            { numero: 1, numeros: [2, 9, 16, 23, 30, 37] },
+                            { numero: 2, numeros: [5, 12, 19, 26, 33, 40] }
+                        ]
                     }
                 ];
                 
@@ -415,7 +494,7 @@
                 app.innerHTML = `
                     <div class="container">
                         <header class="header">
-                            <h1>Dupla Sena de Páscoa Analytics Pro</h1>
+                            <h1>Dupla Sena de Páscoa Analytics Pro v2.0</h1>
                             <div style="margin-top: 15px;">
                                 <button class="btn btn-danger" onclick="DuplaSenaApp.logout()">Sair</button>
                                 ${this.state.user?.username === 'irammendes' ? `
@@ -424,24 +503,45 @@
                             </div>
                         </header>
                         
-                        <div class="flex-grid">
-                            <div class="col">
+                        <div class="tab-container">
+                            <div class="tab-buttons">
+                                <button class="tab-button ${this.state.currentTab === 'gerador' ? 'active' : ''}" onclick="DuplaSenaApp.changeTab('gerador')">Gerador</button>
+                                <button class="tab-button ${this.state.currentTab === 'analise' ? 'active' : ''}" onclick="DuplaSenaApp.changeTab('analise')">Análise</button>
+                                <button class="tab-button ${this.state.currentTab === 'estatisticas' ? 'active' : ''}" onclick="DuplaSenaApp.changeTab('estatisticas')">Estatísticas</button>
+                                <button class="tab-button ${this.state.currentTab === 'verificador' ? 'active' : ''}" onclick="DuplaSenaApp.changeTab('verificador')">Verificador</button>
+                                <button class="tab-button ${this.state.currentTab === 'historico' ? 'active' : ''}" onclick="DuplaSenaApp.changeTab('historico')">Histórico</button>
+                            </div>
+                            
+                            <div class="tab-content ${this.state.currentTab === 'gerador' ? 'active' : ''}">
                                 ${this.geradorTemplate()}
                             </div>
-                            <div class="col">
+                            
+                            <div class="tab-content ${this.state.currentTab === 'analise' ? 'active' : ''}">
                                 ${this.analiseTemplate()}
                             </div>
+                            
+                            <div class="tab-content ${this.state.currentTab === 'estatisticas' ? 'active' : ''}">
+                                ${this.estatisticasTemplate()}
+                            </div>
+                            
+                            <div class="tab-content ${this.state.currentTab === 'verificador' ? 'active' : ''}">
+                                ${this.verificadorTemplate()}
+                            </div>
+                            
+                            <div class="tab-content ${this.state.currentTab === 'historico' ? 'active' : ''}">
+                                ${this.historicoTemplate()}
+                            </div>
                         </div>
-                        
-                        ${this.estatisticasTemplate()}
-                        ${this.verificadorTemplate()}
-                        ${this.historicoTemplate()}
                     </div>
                 `;
                 
                 if (this.state.user?.username === 'irammendes' && !document.getElementById('painelAdminModal')) {
                     document.body.insertAdjacentHTML('beforeend', this.painelAdminTemplate());
                 }
+            },
+            
+            changeTab(tabName) {
+                this.setState({ currentTab: tabName });
             },
             
             loginTemplate() {
@@ -553,11 +653,10 @@
                     <div class="card animate">
                         <h2>Estatísticas e Frequência</h2>
                         <div id="frequenciaNumeros"></div>
-                        <div id="estatisticasAvancadas" class="hidden">
+                        <div id="estatisticasAvancadas">
                             <h3>Estatísticas Avançadas</h3>
                             <div id="contentEstatisticas"></div>
                         </div>
-                        <button class="btn" id="btnMaisEstatisticas" onclick="DuplaSenaApp.toggleEstatisticasAvancadas()">Mostrar Mais Estatísticas</button>
                     </div>
                 `;
             },
@@ -586,7 +685,15 @@
                         <h2>Histórico de Concursos</h2>
                         <div>
                             <label>Quantidade de concursos a exibir:</label>
-                            <input type="number" id="qtdConcursos" min="1" max="50" value="5">
+                            <input type="number" id="qtdConcursos" min="1" max="50" value="10">
+                        </div>
+                        <div>
+                            <label>Filtrar por:</label>
+                            <select id="filtroHistorico" style="width: 100%; padding: 10px; margin-bottom: 15px;">
+                                <option value="todos">Todos</option>
+                                <option value="acumulou">Que acumularam</option>
+                                <option value="naoAcumulou">Que não acumularam</option>
+                            </select>
                         </div>
                         <button class="btn" onclick="DuplaSenaApp.exibirHistorico()">Exibir</button>
                         <div id="historicoResultados" style="margin-top: 15px;"></div>
@@ -737,23 +844,6 @@
                 }
             },
             
-            toggleEstatisticasAvancadas() {
-                const container = document.getElementById('estatisticasAvancadas');
-                const btn = document.getElementById('btnMaisEstatisticas');
-                
-                if (container.classList.contains('hidden')) {
-                    if (!this.state.estatisticasCalculadas) {
-                        this.calcularEstatisticasAvancadas(this.state.ultimosResultadosAnalisados);
-                        this.setState({ estatisticasCalculadas: true });
-                    }
-                    container.classList.remove('hidden');
-                    btn.textContent = 'Mostrar Menos Estatísticas';
-                } else {
-                    container.classList.add('hidden');
-                    btn.textContent = 'Mostrar Mais Estatísticas';
-                }
-            },
-            
             gerarJogos() {
                 const quantity = parseInt(document.getElementById('quantidadeJogos').value) || 1;
                 const estrategia = document.getElementById('estrategiaGeracao').value;
@@ -785,6 +875,8 @@
                     }
                     
                     const atrasados = game.map(num => this.verificarAtraso(num));
+                    const pares = game.filter(num => num % 2 === 0).length;
+                    const impares = 6 - pares;
                     
                     container.innerHTML += `
                         <div class="card" style="margin-top: 10px;">
@@ -795,7 +887,8 @@
                                     ${num.toString().padStart(2, '0')}
                                 </span>
                             `).join('')}</div>
-                            <small>${game.join(', ')}</small>
+                            <p><small>${game.join(', ')}</small></p>
+                            <p><small>Pares: ${pares} | Ímpares: ${impares}</small></p>
                         </div>
                     `;
                 }
@@ -1056,6 +1149,9 @@
                 // Números que mais se repetem entre os dois sorteios
                 const numerosRepetidos = this.calcularNumerosRepetidos(resultados);
                 
+                // Sequências mais comuns
+                const sequencias = this.calcularSequenciasComuns(resultados);
+                
                 container.innerHTML = `
                     <div class="card">
                         <h3>Análise de ${totalConcursos} concursos</h3>
@@ -1067,7 +1163,12 @@
                         <p><strong>Período:</strong> ${resultados[resultados.length-1].data} a ${resultados[0].data}</p>
                         <p><strong>Números mais sorteados:</strong> ${maisSorteados.join(', ')}</p>
                         <p><strong>Números menos sorteados:</strong> ${menosSorteados.join(', ')}</p>
-                        <p><strong>Números que mais se repetem nos dois sorteios:</strong> ${numerosRepetidos.slice(0, 5).join(', ')}</p>
+                        ${numerosRepetidos.length > 0 ? `
+                            <p><strong>Números que mais se repetem nos dois sorteios:</strong> ${numerosRepetidos.slice(0, 5).join(', ')}</p>
+                        ` : ''}
+                        ${sequencias.length > 0 ? `
+                            <p><strong>Sequências de 3 números mais comuns:</strong> ${sequencias.slice(0, 3).map(seq => seq.numeros.join('-')).join(', ')}</p>
+                        ` : ''}
                     </div>
                 `;
             },
@@ -1076,26 +1177,65 @@
                 const repetidos = {};
                 
                 resultados.forEach(concurso => {
-                    if (concurso.sorteios.length === 2) {
+                    // Verificar se tem dois sorteios válidos
+                    if (concurso.sorteios && concurso.sorteios.length === 2) {
                         const [sorteio1, sorteio2] = concurso.sorteios;
-                        const numerosRepetidos = sorteio1.numeros.filter(num => sorteio2.numeros.includes(num));
                         
-                        numerosRepetidos.forEach(num => {
-                            repetidos[num] = (repetidos[num] || 0) + 1;
-                        });
+                        // Verificar se ambos os sorteios têm números
+                        if (sorteio1.numeros && sorteio2.numeros) {
+                            const numerosRepetidos = sorteio1.numeros.filter(num => 
+                                sorteio2.numeros.includes(num)
+                            );
+                            
+                            numerosRepetidos.forEach(num => {
+                                repetidos[num] = (repetidos[num] || 0) + 1;
+                            });
+                        }
                     }
                 });
                 
+                // Converter para array ordenado
                 return Object.entries(repetidos)
                     .sort((a, b) => b[1] - a[1])
-                    .map(entry => entry[0]);
+                    .map(([num]) => parseInt(num));
+            },
+            
+            calcularSequenciasComuns(resultados, tamanho = 3) {
+                const sequencias = {};
+                
+                resultados.forEach(concurso => {
+                    concurso.sorteios.forEach(sorteio => {
+                        const numeros = [...sorteio.numeros].sort((a, b) => a - b);
+                        
+                        // Verificar sequências consecutivas
+                        for (let i = 0; i <= numeros.length - tamanho; i++) {
+                            const sequencia = numeros.slice(i, i + tamanho);
+                            const chave = sequencia.join('-');
+                            sequencias[chave] = (sequencias[chave] || 0) + 1;
+                        }
+                    });
+                });
+                
+                // Converter para array ordenado
+                return Object.entries(sequencias)
+                    .map(([chave, freq]) => ({
+                        numeros: chave.split('-').map(Number),
+                        frequencia: freq
+                    }))
+                    .sort((a, b) => b.frequencia - a.frequencia);
             },
             
             calcularFrequenciaNumeros(resultados) {
                 const frequencia = Array(50).fill(0);
+                
+                // Corrigido: considerar ambos os sorteios
                 resultados.forEach(concurso => {
                     concurso.sorteios.forEach(sorteio => {
-                        sorteio.numeros.forEach(num => frequencia[num-1]++);
+                        sorteio.numeros.forEach(num => {
+                            if (num >= 1 && num <= 50) {  // Verificação de segurança
+                                frequencia[num-1]++;
+                            }
+                        });
                     });
                 });
                 
@@ -1105,33 +1245,45 @@
             
             exibirFrequenciaNumeros(frequencia, totalSorteios) {
                 const container = document.getElementById('frequenciaNumeros');
+                
+                // Verificação para evitar divisão por zero
+                if (totalSorteios === 0) {
+                    container.innerHTML = '<div class="card"><p>Nenhum dado disponível para exibir estatísticas.</p></div>';
+                    return;
+                }
+
                 const maxFrequencia = Math.max(...frequencia);
-                const minFrequencia = Math.min(...frequencia);
+                const minFrequencia = Math.min(...frequencia.filter(f => f > 0)); // Ignorar zeros no mínimo
                 
-                const numerosOrdenados = frequencia.map((freq, index) => ({
-                    numero: index + 1,
-                    frequencia: freq,
-                    porcentagem: totalSorteios > 0 ? (freq / totalSorteios * 100).toFixed(1) : 0,
-                    atrasado: this.verificarAtraso(index + 1)
-                })).sort((a, b) => b.frequencia - a.frequencia);
-                
+                const numerosOrdenados = frequencia
+                    .map((freq, index) => ({
+                        numero: index + 1,
+                        frequencia: freq,
+                        porcentagem: (freq / totalSorteios * 100).toFixed(1),
+                        atrasado: this.verificarAtraso(index + 1)
+                    }))
+                    .sort((a, b) => b.frequencia - a.frequencia);
+
                 container.innerHTML = `
                     <h3>Frequência de Números Sorteados (1-50)</h3>
                     <p>Total de sorteios considerados: ${totalSorteios}</p>
                 `;
-                
+
                 const tabela = document.createElement('table');
-                const thead = document.createElement('thead');
-                thead.innerHTML = `
-                    <tr>
-                        <th>Número</th>
-                        <th>Frequência</th>
-                        <th>% de Sorteios</th>
-                        <th>Gráfico</th>
-                    </tr>
-                `;
-                tabela.appendChild(thead);
                 
+                // Cabeçalho da tabela
+                tabela.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Frequência</th>
+                            <th>% de Sorteios</th>
+                            <th>Gráfico</th>
+                        </tr>
+                    </thead>
+                `;
+
+                // Corpo da tabela
                 const tbody = document.createElement('tbody');
                 
                 numerosOrdenados.forEach(item => {
@@ -1140,19 +1292,19 @@
                     
                     if (item.frequencia === maxFrequencia) {
                         classe = 'numero-frequente';
-                    } else if (item.frequencia === minFrequencia && totalSorteios > 10) {
+                    } else if (item.frequencia === minFrequencia) {
                         classe = 'numero-raro';
                     } else if (item.atrasado) {
                         classe = 'numero-raro';
                     }
                     
                     tr.innerHTML = `
-                        <td><span class="numero ${classe}" title="${classe === 'numero-frequente' ? 'Número frequente' : classe === 'numero-raro' ? 'Número raro ou atrasado' : ''}">${item.numero.toString().padStart(2, '0')}</span></td>
+                        <td><span class="numero ${classe}">${item.numero.toString().padStart(2, '0')}</span></td>
                         <td>${item.frequencia}</td>
                         <td>${item.porcentagem}%</td>
                         <td>
                             <div class="grafico">
-                                <div class="barra" style="width: ${item.porcentagem * 2}%"></div>
+                                <div class="barra" style="width: ${item.porcentagem}%"></div>
                             </div>
                         </td>
                     `;
@@ -1164,13 +1316,21 @@
             },
             
             calcularEstatisticasAvancadas(resultados) {
-                if (resultados.length === 0) return;
-                
                 const content = document.getElementById('contentEstatisticas');
-                content.innerHTML = '';
                 
-                // Estatísticas de pares e ímpares
+                if (resultados.length === 0) {
+                    content.innerHTML = `
+                        <div class="card">
+                            <p>Nenhum dado disponível para exibir estatísticas avançadas.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Estatísticas de pares e ímpares (considerando ambos os sorteios)
                 const parImparStats = { pares: 0, impares: 0 };
+                const totalNumerosSorteados = resultados.length * 12; // 2 sorteios * 6 números
+                
                 resultados.forEach(concurso => {
                     concurso.sorteios.forEach(sorteio => {
                         sorteio.numeros.forEach(num => {
@@ -1178,36 +1338,40 @@
                         });
                     });
                 });
-                
+
                 // Estatísticas por dezenas
-                const dezenasStats = [
-                    { min: 1, max: 10, count: 0 },
-                    { min: 11, max: 20, count: 0 },
-                    { min: 21, max: 30, count: 0 },
-                    { min: 31, max: 40, count: 0 },
-                    { min: 41, max: 50, count: 0 }
-                ];
+                const dezenasStats = Array(5).fill().map((_, i) => ({
+                    min: i * 10 + 1,
+                    max: (i + 1) * 10,
+                    count: 0
+                }));
                 
+                // Ajuste para a última dezena (41-50)
+                dezenasStats[4].max = 50;
+
                 resultados.forEach(concurso => {
                     concurso.sorteios.forEach(sorteio => {
                         sorteio.numeros.forEach(num => {
-                            if (num >= 1 && num <= 10) dezenasStats[0].count++;
-                            else if (num >= 11 && num <= 20) dezenasStats[1].count++;
-                            else if (num >= 21 && num <= 30) dezenasStats[2].count++;
-                            else if (num >= 31 && num <= 40) dezenasStats[3].count++;
-                            else if (num >= 41 && num <= 50) dezenasStats[4].count++;
+                            const dezena = Math.floor((num - 1) / 10);
+                            if (dezena >= 0 && dezena <= 4) {
+                                dezenasStats[dezena].count++;
+                            }
                         });
                     });
                 });
-                
+
                 // Números que mais se repetem entre os dois sorteios
                 const numerosRepetidos = this.calcularNumerosRepetidos(resultados);
-                
+
+                // Sequências mais comuns
+                const sequencias = this.calcularSequenciasComuns(resultados);
+
+                // Exibição das estatísticas
                 content.innerHTML = `
                     <div class="card">
                         <h4>Distribuição de Pares e Ímpares</h4>
-                        <p>Pares: ${parImparStats.pares} (${(parImparStats.pares/(resultados.length*12)*100).toFixed(1)}%)</p>
-                        <p>Ímpares: ${parImparStats.impares} (${(parImparStats.impares/(resultados.length*12)*100).toFixed(1)}%)</p>
+                        <p>Pares: ${parImparStats.pares} (${(parImparStats.pares/totalNumerosSorteados*100).toFixed(1)}%)</p>
+                        <p>Ímpares: ${parImparStats.impares} (${(parImparStats.impares/totalNumerosSorteados*100).toFixed(1)}%)</p>
                     </div>
                     
                     <div class="card" style="margin-top: 15px;">
@@ -1218,7 +1382,7 @@
                                     <h5>${dezena.min}-${dezena.max}:</h5>
                                     <p>Total: ${dezena.count}</p>
                                     <p>Média: ${(dezena.count/resultados.length).toFixed(2)} por concurso</p>
-                                    <p>${((dezena.count/(resultados.length*12))*100).toFixed(1)}% dos números</p>
+                                    <p>${((dezena.count/totalNumerosSorteados)*100).toFixed(1)}% dos números</p>
                                 </div>
                             `).join('')}
                         </div>
@@ -1226,15 +1390,26 @@
                     
                     <div class="card" style="margin-top: 15px;">
                         <h4>Números que mais se repetem nos dois sorteios</h4>
-                        <ul>
-                            ${numerosRepetidos.slice(0, 5).map(num => `
-                                <li>Número ${num.toString().padStart(2, '0')}</li>
-                            `).join('')}
-                        </ul>
+                        ${numerosRepetidos.length > 0 ? `
+                            <ul>
+                                ${numerosRepetidos.slice(0, 5).map(num => `
+                                    <li>Número ${num.toString().padStart(2, '0')}</li>
+                                `).join('')}
+                            </ul>
+                        ` : '<p>Nenhum número repetido encontrado nos sorteios analisados</p>'}
+                    </div>
+                    
+                    <div class="card" style="margin-top: 15px;">
+                        <h4>Sequências mais comuns (3 números consecutivos)</h4>
+                        ${sequencias.length > 0 ? `
+                            <ul>
+                                ${sequencias.slice(0, 5).map(seq => `
+                                    <li>${seq.numeros.join('-')} - ${seq.frequencia} ocorrências</li>
+                                `).join('')}
+                            </ul>
+                        ` : '<p>Nenhuma sequência comum encontrada</p>'}
                     </div>
                 `;
-                
-                this.setState({ estatisticasCalculadas: true });
             },
             
             verificarAcertos() {
@@ -1344,13 +1519,31 @@
             },
             
             exibirHistorico() {
-                const qtd = parseInt(document.getElementById('qtdConcursos').value) || 5;
-                const resultados = this.state.resultados.slice(0, qtd);
+                const qtd = parseInt(document.getElementById('qtdConcursos').value) || 10;
+                const filtro = document.getElementById('filtroHistorico').value;
+                
+                let resultados = this.state.resultados.slice(0, qtd);
+                
+                if (filtro === 'acumulou') {
+                    resultados = resultados.filter(concurso => concurso.acumulou);
+                } else if (filtro === 'naoAcumulou') {
+                    resultados = resultados.filter(concurso => !concurso.acumulou);
+                }
                 
                 const container = document.getElementById('historicoResultados');
+                
+                if (resultados.length === 0) {
+                    container.innerHTML = `
+                        <div class="card">
+                            <p>Nenhum concurso encontrado com os filtros selecionados.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
                 container.innerHTML = `
                     <div class="card">
-                        <h3>Últimos ${resultados.length} Concursos</h3>
+                        <h3>Histórico de Concursos (${filtro === 'todos' ? 'Todos' : filtro === 'acumulou' ? 'Que acumularam' : 'Que não acumularam'})</h3>
                         <table>
                             <thead>
                                 <tr>
